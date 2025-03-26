@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaZi Chart Analysis</title>
+    <title>BaZi Analysis System</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -123,13 +123,10 @@
 
         .step {
             display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
         }
 
         .step.active {
             display: block;
-            opacity: 1;
         }
 
         .verification-code {
@@ -337,6 +334,10 @@
         .chart-cell {
             width: 80px;
             height: 80px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin: 0.5rem 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -346,6 +347,18 @@
             font-size: 2rem;
             font-weight: 600;
             color: var(--primary-color);
+        }
+
+        .chart-cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-hint {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-align: center;
+            margin-bottom: 1rem;
         }
 
         .elements-analysis {
@@ -368,27 +381,61 @@
             padding: 1.5rem;
             text-align: center;
             transition: transform 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .element-card:hover {
             transform: translateY(-5px);
         }
 
+        .element-card.wood { border: 2px solid #4CAF50; }
+        .element-card.fire { border: 2px solid #FF5722; }
+        .element-card.earth { border: 2px solid #795548; }
+        .element-card.metal { border: 2px solid #9E9E9E; }
+        .element-card.water { border: 2px solid #2196F3; }
+
         .element-icon {
-            font-size: 2rem;
+            font-size: 2.5rem;
             margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .element-name {
             font-weight: 500;
             margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .element-percentage {
             font-size: 1.5rem;
             font-weight: 600;
             color: var(--primary-color);
+            position: relative;
+            z-index: 1;
         }
+
+        .element-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            transition: opacity 0.2s ease;
+        }
+
+        .element-card:hover .element-bg {
+            opacity: 0.2;
+        }
+
+        .wood .element-bg { background-color: #4CAF50; }
+        .fire .element-bg { background-color: #FF5722; }
+        .earth .element-bg { background-color: #795548; }
+        .metal .element-bg { background-color: #9E9E9E; }
+        .water .element-bg { background-color: #2196F3; }
 
         .detailed-analysis {
             background: var(--card-background);
@@ -456,41 +503,178 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .basic-info {
+            background: var(--card-background);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-card {
+            background: var(--background-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .info-card p {
+            font-size: 1.25rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .zodiac-icon {
+            font-size: 2rem;
+        }
+
+        .element-info {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* 弹出卡片样式 */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .popup-overlay.active {
+            display: flex;
+        }
+
+        .popup-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            max-width: 90%;
+            width: 400px;
+            position: relative;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 0.5rem;
+            line-height: 1;
+        }
+
+        .popup-content {
+            text-align: center;
+        }
+
+        .popup-character {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .popup-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .popup-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .popup-element {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            background: var(--background-secondary);
+            color: var(--primary-color);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Step 1: Birth Information -->
         <div class="card step active" id="step1">
-            <h1>BaZi Chart Analysis</h1>
+            <h1>BaZi Analysis System</h1>
             <form id="birthForm">
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="birthYear">Birth Year</label>
                         <select id="birthYear" required>
                             <option value="">Select Year</option>
-                            <!-- Years will be populated by JavaScript -->
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="birthMonth">Birth Month</label>
                         <select id="birthMonth" required>
                             <option value="">Select Month</option>
-                            <!-- Months will be populated by JavaScript -->
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="birthDay">Birth Day</label>
                         <select id="birthDay" required>
                             <option value="">Select Day</option>
-                            <!-- Days will be populated by JavaScript -->
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="birthHour">Birth Hour</label>
                         <select id="birthHour" required>
                             <option value="">Select Hour</option>
-                            <!-- Hours will be populated by JavaScript -->
                         </select>
                     </div>
                 </div>
@@ -528,31 +712,55 @@
 
         <!-- Step 3: Results -->
         <div class="card step" id="step3">
-            <h2>Your BaZi Chart Analysis</h2>
+            <h2>Your BaZi Analysis Results</h2>
             <div class="results-container">
+                <!-- Basic Info Section -->
+                <div class="basic-info">
+                    <h3>Basic Information</h3>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h4>Chinese Zodiac</h4>
+                            <p>
+                                <span class="zodiac-icon" id="zodiacIcon"></span>
+                                <span id="zodiacAnimal"></span>
+                            </p>
+                            <p class="element-info" id="zodiacElement"></p>
+                        </div>
+                        <div class="info-card">
+                            <h4>Western Zodiac</h4>
+                            <p>
+                                <span class="zodiac-icon" id="zodiacSignIcon"></span>
+                                <span id="westernZodiac"></span>
+                            </p>
+                            <p class="element-info" id="zodiacSignElement"></p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- BaZi Chart Section -->
                 <div class="bazi-chart">
                     <div class="chart-header">
                         <h3>BaZi Chart</h3>
+                        <p class="chart-hint">Click on cards for detailed explanation</p>
                     </div>
                     <div class="chart-grid">
                         <div class="chart-column">
-                            <div class="chart-label">Year</div>
+                            <div class="chart-label">年柱</div>
                             <div class="chart-cell" id="yearStem"></div>
                             <div class="chart-cell" id="yearBranch"></div>
                         </div>
                         <div class="chart-column">
-                            <div class="chart-label">Month</div>
+                            <div class="chart-label">月柱</div>
                             <div class="chart-cell" id="monthStem"></div>
                             <div class="chart-cell" id="monthBranch"></div>
                         </div>
                         <div class="chart-column">
-                            <div class="chart-label">Day</div>
+                            <div class="chart-label">日柱</div>
                             <div class="chart-cell" id="dayStem"></div>
                             <div class="chart-cell" id="dayBranch"></div>
                         </div>
                         <div class="chart-column">
-                            <div class="chart-label">Hour</div>
+                            <div class="chart-label">时柱</div>
                             <div class="chart-cell" id="hourStem"></div>
                             <div class="chart-cell" id="hourBranch"></div>
                         </div>
@@ -564,26 +772,31 @@
                     <h3>Five Elements Analysis</h3>
                     <div class="elements-grid">
                         <div class="element-card wood">
+                            <div class="element-bg"></div>
                             <div class="element-icon">🌳</div>
                             <div class="element-name">Wood</div>
                             <div class="element-percentage" id="woodPercentage">0%</div>
                         </div>
                         <div class="element-card fire">
+                            <div class="element-bg"></div>
                             <div class="element-icon">🔥</div>
                             <div class="element-name">Fire</div>
                             <div class="element-percentage" id="firePercentage">0%</div>
                         </div>
                         <div class="element-card earth">
+                            <div class="element-bg"></div>
                             <div class="element-icon">🌍</div>
                             <div class="element-name">Earth</div>
                             <div class="element-percentage" id="earthPercentage">0%</div>
                         </div>
                         <div class="element-card metal">
+                            <div class="element-bg"></div>
                             <div class="element-icon">⚔️</div>
                             <div class="element-name">Metal</div>
                             <div class="element-percentage" id="metalPercentage">0%</div>
                         </div>
                         <div class="element-card water">
+                            <div class="element-bg"></div>
                             <div class="element-icon">💧</div>
                             <div class="element-name">Water</div>
                             <div class="element-percentage" id="waterPercentage">0%</div>
@@ -616,11 +829,24 @@
 
                 <!-- Recommendations Section -->
                 <div class="recommendations">
-                    <h3>Recommendations</h3>
+                    <h3>Personalized Recommendations</h3>
                     <div class="recommendations-list" id="recommendationsList">
                         <!-- Recommendations will be populated by JavaScript -->
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加弹出层HTML结构 -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-card">
+            <button class="popup-close" onclick="closePopup()">×</button>
+            <div class="popup-content">
+                <div class="popup-character"></div>
+                <div class="popup-title"></div>
+                <div class="popup-description"></div>
+                <div class="popup-element"></div>
             </div>
         </div>
     </div>
@@ -649,12 +875,12 @@
             // Initialize hour select (子时 to 亥时)
             const hourSelect = document.getElementById('birthHour');
             const hours = [
-                '子时 (11:00 PM - 1:00 AM)', '丑时 (1:00 AM - 3:00 AM)', 
-                '寅时 (3:00 AM - 5:00 AM)', '卯时 (5:00 AM - 7:00 AM)',
-                '辰时 (7:00 AM - 9:00 AM)', '巳时 (9:00 AM - 11:00 AM)',
-                '午时 (11:00 AM - 1:00 PM)', '未时 (1:00 PM - 3:00 PM)',
-                '申时 (3:00 PM - 5:00 PM)', '酉时 (5:00 PM - 7:00 PM)',
-                '戌时 (7:00 PM - 9:00 PM)', '亥时 (9:00 PM - 11:00 PM)'
+                'Zi (23:00-1:00)', 'Chou (1:00-3:00)', 
+                'Yin (3:00-5:00)', 'Mao (5:00-7:00)',
+                'Chen (7:00-9:00)', 'Si (9:00-11:00)',
+                'Wu (11:00-13:00)', 'Wei (13:00-15:00)',
+                'Shen (15:00-17:00)', 'You (17:00-19:00)',
+                'Xu (19:00-21:00)', 'Hai (21:00-23:00)'
             ];
             hours.forEach((hour, index) => {
                 const option = document.createElement('option');
@@ -671,6 +897,7 @@
             // Handle birth form submission
             document.getElementById('birthForm').addEventListener('submit', function(e) {
                 e.preventDefault();
+                
                 const year = parseInt(document.getElementById('birthYear').value);
                 const month = parseInt(document.getElementById('birthMonth').value);
                 const day = parseInt(document.getElementById('birthDay').value);
@@ -682,36 +909,19 @@
                 // Store the result for later use
                 window.baziResult = bazi;
                 
+                // 直接跳转到第二步
                 showStep(2);
             });
 
             // Handle email form submission
             document.getElementById('emailForm').addEventListener('submit', function(e) {
                 e.preventDefault();
+                
                 const email = document.getElementById('email').value;
                 const codeInputs = document.querySelectorAll('.verification-code input');
                 const code = Array.from(codeInputs).map(input => input.value).join('');
                 
-                // 验证码为1234（演示用）
-                if (code === '1234') {
-                    const bazi = window.baziResult;
-                    if (bazi) {
-                        updateResultsTable(bazi);
-                        showStep(3);
-                    } else {
-                        alert('Error: Birth information not found. Please try again.');
-                    }
-                } else {
-                    alert('Invalid verification code. Please try again.');
-                }
-            });
-
-            // 发送验证码按钮点击事件
-            const sendCodeBtn = document.getElementById('sendCodeBtn');
-            const resendTimer = document.getElementById('resendTimer');
-
-            sendCodeBtn.addEventListener('click', function() {
-                const email = document.getElementById('email').value;
+                // Update alert messages
                 if (!email) {
                     alert('Please enter your email address');
                     return;
@@ -720,13 +930,45 @@
                     alert('Please enter a valid email address');
                     return;
                 }
+
+                // 验证码验证
+                if (code === '1234') {
+                    const bazi = window.baziResult;
+                    if (bazi) {
+                        // 先切换到结果页面
+                        showStep(3);
+                        // 然后更新结果
+                        setTimeout(() => {
+                            updateResultsTable(bazi);
+                        }, 100);
+                    } else {
+                        alert('Error: Birth information not found. Please try again.');
+                    }
+                } else {
+                    alert('Invalid verification code. Please try again.');
+                }
+            });
+
+            // 添加发送验证码按钮的点击事件
+            document.getElementById('sendCodeBtn').addEventListener('click', function() {
+                const email = document.getElementById('email').value;
                 
+                if (!email) {
+                    alert('Please enter your email address');
+                    return;
+                }
+                if (!isValidEmail(email)) {
+                    alert('Please enter a valid email address');
+                    return;
+                }
+
                 // 禁用按钮并开始倒计时
                 this.disabled = true;
+                const resendTimer = document.getElementById('resendTimer');
                 let countdown = 60;
                 
                 const timer = setInterval(() => {
-                    resendTimer.textContent = `Resend code in ${countdown}s`;
+                    resendTimer.textContent = `Resend in ${countdown}s`;
                     countdown--;
                     
                     if (countdown < 0) {
@@ -736,7 +978,7 @@
                     }
                 }, 1000);
                 
-                // 显示验证码（实际项目中应该通过邮件发送）
+                // 发送验证码
                 alert('Verification code sent to your email: 1234');
             });
 
@@ -781,18 +1023,13 @@
         function showStep(stepNumber) {
             // 隐藏所有步骤
             document.querySelectorAll('.step').forEach(step => {
-                step.style.display = 'none';
+                step.classList.remove('active');
             });
             
             // 显示目标步骤
             const targetStep = document.getElementById(`step${stepNumber}`);
             if (targetStep) {
-                targetStep.style.display = 'block';
-                // 添加淡入动画
-                targetStep.style.opacity = '0';
-                setTimeout(() => {
-                    targetStep.style.opacity = '1';
-                }, 10);
+                targetStep.classList.add('active');
             }
         }
 
@@ -801,10 +1038,13 @@
             const heavenlyStems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
             // 地支
             const earthlyBranches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+            // 生肖
+            const zodiacAnimals = ['Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat', 'Monkey', 'Rooster', 'Dog', 'Pig'];
             
             // 计算年柱
             const yearStem = heavenlyStems[(year - 4) % 10];
             const yearBranch = earthlyBranches[(year - 4) % 12];
+            const zodiacAnimal = zodiacAnimals[(year - 4) % 12];
             
             // 计算月柱
             const monthStem = heavenlyStems[(year * 2 + month) % 10];
@@ -822,32 +1062,168 @@
                 year: { stem: yearStem, branch: yearBranch },
                 month: { stem: monthStem, branch: monthBranch },
                 day: { stem: dayStem, branch: dayBranch },
-                hour: { stem: hourStem, branch: hourBranch }
+                hour: { stem: hourStem, branch: hourBranch },
+                zodiacAnimal: zodiacAnimal,
+                westernZodiac: calculateWesternZodiac(month, day)
             };
         }
 
-        function updateResultsTable(bazi) {
-            // Update BaZi Chart
-            document.getElementById('yearStem').textContent = bazi.year.stem;
-            document.getElementById('yearBranch').textContent = bazi.year.branch;
-            document.getElementById('monthStem').textContent = bazi.month.stem;
-            document.getElementById('monthBranch').textContent = bazi.month.branch;
-            document.getElementById('dayStem').textContent = bazi.day.stem;
-            document.getElementById('dayBranch').textContent = bazi.day.branch;
-            document.getElementById('hourStem').textContent = bazi.hour.stem;
-            document.getElementById('hourBranch').textContent = bazi.hour.branch;
+        function calculateWesternZodiac(month, day) {
+            const dates = [20, 19, 21, 20, 21, 21, 23, 23, 23, 23, 22, 22];
+            const signs = ['Aquarius', 'Pisces', 'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn'];
+            const index = day < dates[month - 1] ? (month - 2 + 12) % 12 : (month - 1) % 12;
+            return signs[index];
+        }
 
-            // Calculate and update elements
-            const elements = calculateElements(bazi);
-            const total = Object.values(elements).reduce((a, b) => a + b, 0);
-            
-            for (const [element, count] of Object.entries(elements)) {
-                const percentage = Math.round((count / total) * 100);
-                document.getElementById(`${element}Percentage`).textContent = `${percentage}%`;
+        function updateBaziChart(bazi) {
+            try {
+                const cells = {
+                    'yearStem': {
+                        char: bazi.year.stem,
+                        title: 'Year Heavenly Stem',
+                        description: 'Represents your relationship with the older generation and early life fortune.',
+                        element: getElementForStem(bazi.year.stem)
+                    },
+                    'yearBranch': {
+                        char: bazi.year.branch,
+                        title: 'Year Earthly Branch',
+                        description: 'Shows your family background and inherited traits.',
+                        element: getElementForBranch(bazi.year.branch)
+                    },
+                    'monthStem': {
+                        char: bazi.month.stem,
+                        title: 'Month Heavenly Stem',
+                        description: 'Indicates your learning abilities and career potential.',
+                        element: getElementForStem(bazi.month.stem)
+                    },
+                    'monthBranch': {
+                        char: bazi.month.branch,
+                        title: 'Month Earthly Branch',
+                        description: 'Reflects your work environment and career opportunities.',
+                        element: getElementForBranch(bazi.month.branch)
+                    },
+                    'dayStem': {
+                        char: bazi.day.stem,
+                        title: 'Day Heavenly Stem',
+                        description: 'Represents your core personality and personal characteristics.',
+                        element: getElementForStem(bazi.day.stem)
+                    },
+                    'dayBranch': {
+                        char: bazi.day.branch,
+                        title: 'Day Earthly Branch',
+                        description: 'Shows your social circle and interpersonal relationships.',
+                        element: getElementForBranch(bazi.day.branch)
+                    },
+                    'hourStem': {
+                        char: bazi.hour.stem,
+                        title: 'Hour Heavenly Stem',
+                        description: 'Indicates your thinking pattern and potential talents.',
+                        element: getElementForStem(bazi.hour.stem)
+                    },
+                    'hourBranch': {
+                        char: bazi.hour.branch,
+                        title: 'Hour Earthly Branch',
+                        description: 'Predicts your future development and late life fortune.',
+                        element: getElementForBranch(bazi.hour.branch)
+                    }
+                };
+
+                for (const [id, content] of Object.entries(cells)) {
+                    const cell = document.getElementById(id);
+                    if (cell) {
+                        cell.textContent = content.char;
+                        cell.onclick = () => showPopup(
+                            content.char,
+                            content.title,
+                            content.description,
+                            content.element
+                        );
+                    }
+                }
+
+                // 添加点击空白处关闭弹窗
+                const popupOverlay = document.getElementById('popupOverlay');
+                if (popupOverlay) {
+                    popupOverlay.onclick = function(event) {
+                        if (event.target === this) {
+                            closePopup();
+                        }
+                    };
+                }
+            } catch (error) {
+                console.error('Error updating BaZi chart:', error);
             }
+        }
 
-            // Generate detailed analysis
-            generateDetailedAnalysis(bazi, elements);
+        function updateResultsTable(bazi) {
+            try {
+                // 更新八字图表
+                updateBaziChart(bazi);
+
+                // 更新基本信息
+                const zodiacAnimalElement = document.getElementById('zodiacAnimal');
+                const zodiacIconElement = document.getElementById('zodiacIcon');
+                const zodiacElementElement = document.getElementById('zodiacElement');
+                const westernZodiacElement = document.getElementById('westernZodiac');
+                const zodiacSignIconElement = document.getElementById('zodiacSignIcon');
+                const zodiacSignElementElement = document.getElementById('zodiacSignElement');
+
+                if (!zodiacAnimalElement || !zodiacIconElement || !zodiacElementElement ||
+                    !westernZodiacElement || !zodiacSignIconElement || !zodiacSignElementElement) {
+                    console.error('One or more basic info elements not found');
+                    return;
+                }
+
+                const zodiacIcons = {
+                    'Rat': '🐭', 'Ox': '🐮', 'Tiger': '🐯', 'Rabbit': '🐰',
+                    'Dragon': '🐲', 'Snake': '🐍', 'Horse': '🐴', 'Goat': '🐑',
+                    'Monkey': '🐵', 'Rooster': '🐔', 'Dog': '🐶', 'Pig': '🐷'
+                };
+                
+                const zodiacElements = {
+                    'Rat': 'Water', 'Ox': 'Earth', 'Tiger': 'Wood', 'Rabbit': 'Wood',
+                    'Dragon': 'Earth', 'Snake': 'Fire', 'Horse': 'Fire', 'Goat': 'Earth',
+                    'Monkey': 'Metal', 'Rooster': 'Metal', 'Dog': 'Earth', 'Pig': 'Water'
+                };
+                
+                const zodiacSignIcons = {
+                    'Aquarius': '♒', 'Pisces': '♓', 'Aries': '♈', 'Taurus': '♉',
+                    'Gemini': '♊', 'Cancer': '♋', 'Leo': '♌', 'Virgo': '♍',
+                    'Libra': '♎', 'Scorpio': '♏', 'Sagittarius': '♐', 'Capricorn': '♑'
+                };
+
+                const zodiacSignElements = {
+                    'Aquarius': 'Air', 'Pisces': 'Water', 'Aries': 'Fire', 'Taurus': 'Earth',
+                    'Gemini': 'Air', 'Cancer': 'Water', 'Leo': 'Fire', 'Virgo': 'Earth',
+                    'Libra': 'Air', 'Scorpio': 'Water', 'Sagittarius': 'Fire', 'Capricorn': 'Earth'
+                };
+
+                zodiacAnimalElement.textContent = bazi.zodiacAnimal;
+                zodiacIconElement.textContent = zodiacIcons[bazi.zodiacAnimal];
+                zodiacElementElement.textContent = `Element: ${zodiacElements[bazi.zodiacAnimal]}`;
+                
+                westernZodiacElement.textContent = bazi.westernZodiac;
+                zodiacSignIconElement.textContent = zodiacSignIcons[bazi.westernZodiac];
+                zodiacSignElementElement.textContent = `Element: ${zodiacSignElements[bazi.westernZodiac]}`;
+
+                // 计算和更新五行
+                const elements = calculateElements(bazi);
+                const total = Object.values(elements).reduce((a, b) => a + b, 0);
+                
+                for (const [element, count] of Object.entries(elements)) {
+                    const percentage = Math.round((count / total) * 100);
+                    const percentageElement = document.getElementById(`${element}Percentage`);
+                    if (percentageElement) {
+                        percentageElement.textContent = `${percentage}%`;
+                    }
+                }
+
+                // 生成详细分析
+                generateDetailedAnalysis(bazi, elements);
+
+            } catch (error) {
+                console.error('Error updating results:', error);
+            }
         }
 
         function calculateElements(bazi) {
@@ -861,20 +1237,21 @@
             
             // 天干五行对应
             const stemElements = {
-                '甲': 'wood', '乙': 'wood',
-                '丙': 'fire', '丁': 'fire',
-                '戊': 'earth', '己': 'earth',
-                '庚': 'metal', '辛': 'metal',
-                '壬': 'water', '癸': 'water'
+                '甲': 'Wood', '乙': 'Wood',
+                '丙': 'Fire', '丁': 'Fire',
+                '戊': 'Earth', '己': 'Earth',
+                '庚': 'Metal', '辛': 'Metal',
+                '壬': 'Water', '癸': 'Water'
             };
             
             // 地支五行对应
             const branchElements = {
-                '寅': 'wood', '卯': 'wood',
-                '巳': 'fire', '午': 'fire',
-                '辰': 'earth', '戌': 'earth', '丑': 'earth', '未': 'earth',
-                '申': 'metal', '酉': 'metal',
-                '亥': 'water', '子': 'water'
+                '子': 'Water', '丑': 'Earth',
+                '寅': 'Wood', '卯': 'Wood',
+                '辰': 'Earth', '巳': 'Fire',
+                '午': 'Fire', '未': 'Earth',
+                '申': 'Metal', '酉': 'Metal',
+                '戌': 'Earth', '亥': 'Water'
             };
             
             // 计算天干五行
@@ -893,23 +1270,23 @@
         }
 
         function generateDetailedAnalysis(bazi, elements) {
-            // Personality Traits
+            // 性格特征
             const personalityTraits = generatePersonalityTraits(bazi, elements);
             document.getElementById('personalityTraits').textContent = personalityTraits;
 
-            // Career Potential
+            // 事业发展
             const careerPotential = generateCareerPotential(bazi, elements);
             document.getElementById('careerPotential').textContent = careerPotential;
 
-            // Relationships
+            // 人际关系
             const relationships = generateRelationships(bazi, elements);
             document.getElementById('relationships').textContent = relationships;
 
-            // Health & Wellness
+            // 健康建议
             const healthWellness = generateHealthWellness(bazi, elements);
             document.getElementById('healthWellness').textContent = healthWellness;
 
-            // Generate recommendations
+            // 生成建议
             generateRecommendations(bazi, elements);
         }
 
@@ -918,35 +1295,35 @@
             const strongestElement = Object.entries(elements)
                 .sort(([,a], [,b]) => b - a)[0][0];
 
-            switch(strongestElement) {
-                case 'wood':
-                    traits.push("Creative and innovative thinker");
-                    traits.push("Adaptable and flexible in approach");
-                    traits.push("Strong sense of justice and fairness");
-                    break;
-                case 'fire':
-                    traits.push("Passionate and enthusiastic");
-                    traits.push("Natural leader with charisma");
-                    traits.push("Quick decision maker");
-                    break;
-                case 'earth':
-                    traits.push("Practical and reliable");
-                    traits.push("Patient and nurturing");
-                    traits.push("Strong sense of responsibility");
-                    break;
-                case 'metal':
-                    traits.push("Precise and detail-oriented");
-                    traits.push("Strong sense of justice");
-                    traits.push("Determined and focused");
-                    break;
-                case 'water':
-                    traits.push("Intuitive and insightful");
-                    traits.push("Adaptable to change");
-                    traits.push("Deep thinker and philosopher");
-                    break;
-            }
+            const elementTraits = {
+                wood: [
+                    "Creative and innovative",
+                    "Flexible and adaptable",
+                    "Values fairness and justice"
+                ],
+                fire: [
+                    "Enthusiastic and energetic",
+                    "Natural leader",
+                    "Decisive and quick to act"
+                ],
+                earth: [
+                    "Practical and reliable",
+                    "Patient and balanced",
+                    "Responsible and committed"
+                ],
+                metal: [
+                    "Precise and detail-oriented",
+                    "Just and principled",
+                    "Determined and focused"
+                ],
+                water: [
+                    "Sharp-minded with strong intuition",
+                    "Adaptable to change",
+                    "Wise and profound thinker"
+                ]
+            };
 
-            return traits.join(". ");
+            return elementTraits[strongestElement].join("；");
         }
 
         function generateCareerPotential(bazi, elements) {
@@ -954,35 +1331,35 @@
             const strongestElement = Object.entries(elements)
                 .sort(([,a], [,b]) => b - a)[0][0];
 
-            switch(strongestElement) {
-                case 'wood':
-                    careers.push("Creative industries");
-                    careers.push("Environmental work");
-                    careers.push("Education and training");
-                    break;
-                case 'fire':
-                    careers.push("Leadership roles");
-                    careers.push("Sales and marketing");
-                    careers.push("Entertainment industry");
-                    break;
-                case 'earth':
-                    careers.push("Real estate");
-                    careers.push("Agriculture");
-                    careers.push("Healthcare");
-                    break;
-                case 'metal':
-                    careers.push("Finance and banking");
-                    careers.push("Law and justice");
-                    careers.push("Engineering");
-                    break;
-                case 'water':
-                    careers.push("Research and analysis");
-                    careers.push("Counseling and therapy");
-                    careers.push("Technology and innovation");
-                    break;
-            }
+            const elementCareers = {
+                wood: [
+                    "Creative industries",
+                    "Environmental protection",
+                    "Education and training"
+                ],
+                fire: [
+                    "Leadership and management",
+                    "Marketing",
+                    "Entertainment industry"
+                ],
+                earth: [
+                    "Real estate",
+                    "Agriculture",
+                    "Healthcare"
+                ],
+                metal: [
+                    "Finance and banking",
+                    "Law and justice",
+                    "Engineering"
+                ],
+                water: [
+                    "Research and analysis",
+                    "Psychology and counseling",
+                    "Information technology"
+                ]
+            };
 
-            return `Your career potential aligns with ${careers.join(", ")}. Your natural talents and inclinations suggest success in these fields.`;
+            return `Suitable career paths: ${elementCareers[strongestElement].join(", ")}. These fields can fully utilize your natural talents and potential.`;
         }
 
         function generateRelationships(bazi, elements) {
@@ -1006,13 +1383,19 @@
             
             let interpretation = "Your BaZi chart shows ";
             
-            // 找出最强的五行
             const strongestElement = Object.entries(percentages)
                 .sort(([,a], [,b]) => b - a)[0];
             
-            interpretation += `a strong presence of ${strongestElement[0]} element (${strongestElement[1]}%)`;
+            const elementNames = {
+                wood: 'Wood',
+                fire: 'Fire',
+                earth: 'Earth',
+                metal: 'Metal',
+                water: 'Water'
+            };
             
-            // 添加五行相生相克关系
+            interpretation += `a strong presence of ${elementNames[strongestElement[0]]} element (${strongestElement[1]}%)`;
+            
             const relationships = {
                 wood: { generates: 'fire', controls: 'earth' },
                 fire: { generates: 'earth', controls: 'metal' },
@@ -1025,21 +1408,148 @@
             const controlledElement = relationships[strongestElement[0]].controls;
             
             interpretation += `, suggesting ${getElementTraits(strongestElement[0])}. `;
-            interpretation += `The ${supportingElement} element (${percentages[supportingElement]}%) supports your ${strongestElement[0]} energy, `;
-            interpretation += `while the ${controlledElement} element (${percentages[controlledElement]}%) is controlled by it. `;
+            interpretation += `The ${elementNames[supportingElement]} element (${percentages[supportingElement]}%) supports your ${elementNames[strongestElement[0]]} energy, `;
+            interpretation += `while the ${elementNames[controlledElement]} element (${percentages[controlledElement]}%) is controlled by it.`;
             
             return interpretation;
         }
 
         function getElementTraits(element) {
             const traits = {
-                wood: "creativity, growth, and flexibility",
-                fire: "passion, leadership, and transformation",
-                earth: "stability, practicality, and nurturing",
-                metal: "precision, determination, and justice",
-                water: "wisdom, adaptability, and mystery"
+                wood: "You are creative, growth-oriented, and flexible",
+                fire: "You are passionate, have leadership qualities, and embrace change",
+                earth: "You are practical, stable, and nurturing",
+                metal: "You are precise, determined, and pursue justice",
+                water: "You are wise, adaptable, and possess deep intuition"
             };
             return traits[element];
+        }
+
+        function generateHealthWellness(bazi, elements) {
+            const health = [];
+            const strongestElement = Object.entries(elements)
+                .sort(([,a], [,b]) => b - a)[0][0];
+
+            const elementHealth = {
+                wood: [
+                    "Pay attention to liver and eye health",
+                    "Recommended: stretching exercises",
+                    "Include green vegetables in diet"
+                ],
+                fire: [
+                    "Monitor heart and circulation",
+                    "Recommended: aerobic exercises",
+                    "Maintain emotional balance"
+                ],
+                earth: [
+                    "Focus on digestive health",
+                    "Recommended: moderate exercise",
+                    "Maintain balanced diet"
+                ],
+                metal: [
+                    "Care for respiratory system",
+                    "Practice breathing exercises",
+                    "Maintain clean environment"
+                ],
+                water: [
+                    "Monitor kidney and bladder health",
+                    "Stay well hydrated",
+                    "Recommended: swimming"
+                ]
+            };
+
+            return elementHealth[strongestElement].join("；");
+        }
+
+        function generateRecommendations(bazi, elements) {
+            const recommendationsList = document.getElementById('recommendationsList');
+            if (!recommendationsList) {
+                console.error('Recommendations list element not found');
+                return;
+            }
+            recommendationsList.innerHTML = '';
+
+            const strongestElement = Object.entries(elements)
+                .sort(([,a], [,b]) => b - a)[0][0];
+
+            const elementRecommendations = {
+                wood: [
+                    { icon: '🌱', text: 'Engage in creative activities and projects' },
+                    { icon: '🌳', text: 'Spend time in nature' },
+                    { icon: '📚', text: 'Continue learning and growing' }
+                ],
+                fire: [
+                    { icon: '🔥', text: 'Take leadership roles' },
+                    { icon: '🗣️', text: 'Improve public speaking skills' },
+                    { icon: '🎭', text: 'Participate in social activities' }
+                ],
+                earth: [
+                    { icon: '🏡', text: 'Establish stable routines' },
+                    { icon: '🌍', text: 'Develop gardening interests' },
+                    { icon: '🤝', text: 'Build long-term relationships' }
+                ],
+                metal: [
+                    { icon: '⚖️', text: 'Cultivate self-discipline' },
+                    { icon: '✨', text: 'Pursue quality in life' },
+                    { icon: '🎯', text: 'Set clear goals' }
+                ],
+                water: [
+                    { icon: '🌊', text: 'Stay flexible and adaptable' },
+                    { icon: '🧘', text: 'Practice meditation' },
+                    { icon: '🔍', text: 'Explore philosophical thinking' }
+                ]
+            };
+
+            elementRecommendations[strongestElement].forEach(rec => {
+                const item = document.createElement('div');
+                item.className = 'recommendation-item';
+                item.innerHTML = `
+                    <div class="recommendation-icon">${rec.icon}</div>
+                    <div class="recommendation-text">${rec.text}</div>
+                `;
+                recommendationsList.appendChild(item);
+            });
+        }
+
+        // 添加弹出框相关函数
+        function showPopup(character, title, description, element) {
+            const overlay = document.getElementById('popupOverlay');
+            const content = overlay.querySelector('.popup-content');
+            
+            content.querySelector('.popup-character').textContent = character;
+            content.querySelector('.popup-title').textContent = title;
+            content.querySelector('.popup-description').textContent = description;
+            content.querySelector('.popup-element').textContent = `Element: ${element}`;
+            
+            overlay.classList.add('active');
+        }
+
+        function closePopup() {
+            document.getElementById('popupOverlay').classList.remove('active');
+        }
+
+        // 添加获取五行属性的辅助函数
+        function getElementForStem(stem) {
+            const stemElements = {
+                '甲': 'Wood', '乙': 'Wood',
+                '丙': 'Fire', '丁': 'Fire',
+                '戊': 'Earth', '己': 'Earth',
+                '庚': 'Metal', '辛': 'Metal',
+                '壬': 'Water', '癸': 'Water'
+            };
+            return stemElements[stem] || 'Unknown';
+        }
+
+        function getElementForBranch(branch) {
+            const branchElements = {
+                '子': 'Water', '丑': 'Earth',
+                '寅': 'Wood', '卯': 'Wood',
+                '辰': 'Earth', '巳': 'Fire',
+                '午': 'Fire', '未': 'Earth',
+                '申': 'Metal', '酉': 'Metal',
+                '戌': 'Earth', '亥': 'Water'
+            };
+            return branchElements[branch] || 'Unknown';
         }
     </script>
 </body>
