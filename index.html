@@ -123,16 +123,11 @@
 
         .step {
             display: none;
+            transition: opacity 0.3s ease;
         }
 
         .step.active {
             display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .verification-code {
@@ -470,19 +465,31 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="birthYear">Birth Year</label>
-                        <select id="birthYear" required></select>
+                        <select id="birthYear" required>
+                            <option value="">Select Year</option>
+                            <!-- Years will be populated by JavaScript -->
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="birthMonth">Birth Month</label>
-                        <select id="birthMonth" required></select>
+                        <select id="birthMonth" required>
+                            <option value="">Select Month</option>
+                            <!-- Months will be populated by JavaScript -->
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="birthDay">Birth Day</label>
-                        <select id="birthDay" required></select>
+                        <select id="birthDay" required>
+                            <option value="">Select Day</option>
+                            <!-- Days will be populated by JavaScript -->
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="birthHour">Birth Hour</label>
-                        <select id="birthHour" required></select>
+                        <select id="birthHour" required>
+                            <option value="">Select Hour</option>
+                            <!-- Hours will be populated by JavaScript -->
+                        </select>
                     </div>
                 </div>
                 <button type="submit">Next: Email Verification</button>
@@ -618,7 +625,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize year select
+            // Initialize year select (1900 to current year)
             const yearSelect = document.getElementById('birthYear');
             const currentYear = new Date().getFullYear();
             for (let year = 1900; year <= currentYear; year++) {
@@ -628,7 +635,7 @@
                 yearSelect.appendChild(option);
             }
 
-            // Initialize month select
+            // Initialize month select (1 to 12)
             const monthSelect = document.getElementById('birthMonth');
             for (let month = 1; month <= 12; month++) {
                 const option = document.createElement('option');
@@ -637,7 +644,7 @@
                 monthSelect.appendChild(option);
             }
 
-            // Initialize hour select
+            // Initialize hour select (子时 to 亥时)
             const hourSelect = document.getElementById('birthHour');
             const hours = [
                 '子时 (11:00 PM - 1:00 AM)', '丑时 (1:00 AM - 3:00 AM)', 
@@ -686,8 +693,12 @@
                 // 验证码为1234（演示用）
                 if (code === '1234') {
                     const bazi = window.baziResult;
-                    updateResultsTable(bazi);
-                    showStep(3);
+                    if (bazi) {
+                        updateResultsTable(bazi);
+                        showStep(3);
+                    } else {
+                        alert('Error: Birth information not found. Please try again.');
+                    }
                 } else {
                     alert('Invalid verification code. Please try again.');
                 }
@@ -756,7 +767,7 @@
             const daySelect = document.getElementById('birthDay');
             const daysInMonth = new Date(year, month, 0).getDate();
 
-            daySelect.innerHTML = '';
+            daySelect.innerHTML = '<option value="">Select Day</option>';
             for (let day = 1; day <= daysInMonth; day++) {
                 const option = document.createElement('option');
                 option.value = day;
@@ -766,10 +777,21 @@
         }
 
         function showStep(stepNumber) {
+            // 隐藏所有步骤
             document.querySelectorAll('.step').forEach(step => {
-                step.classList.remove('active');
+                step.style.display = 'none';
             });
-            document.getElementById(`step${stepNumber}`).classList.add('active');
+            
+            // 显示目标步骤
+            const targetStep = document.getElementById(`step${stepNumber}`);
+            if (targetStep) {
+                targetStep.style.display = 'block';
+                // 添加淡入动画
+                targetStep.style.opacity = '0';
+                setTimeout(() => {
+                    targetStep.style.opacity = '1';
+                }, 10);
+            }
         }
 
         function calculateBaZi(year, month, day, hour) {
@@ -964,6 +986,14 @@
         function generateRelationships(bazi, elements) {
             const relationships = [];
             const strongestElement = Object.entries(elements)
+                .sort(([,a], [,b]) => b - a)[0][0];
+
+            const interpretation = generateInterpretation(elements);
+            relationships.push(interpretation);
+
+            return relationships.join(". ");
+        }
+
         function generateInterpretation(elements) {
             const total = Object.values(elements).reduce((a, b) => a + b, 0);
             const percentages = {};
