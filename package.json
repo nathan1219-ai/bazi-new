@@ -1,0 +1,21 @@
+{
+  "name": "bazi-calculator",
+  "version": "1.0.0",
+  "description": "基于HTML、CSS和JavaScript的八字排盘在线工具",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve .",
+    "dev": "serve ."
+  },
+  "keywords": [
+    "bazi",
+    "chinese-astrology",
+    "fortune-telling",
+    "horoscope"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
